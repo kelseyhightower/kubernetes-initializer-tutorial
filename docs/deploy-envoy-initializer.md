@@ -25,9 +25,3 @@ kubectl apply -f configmaps/envoy-initializer.yaml
 ```
 kubectl apply -f deployments/envoy-initializer.yaml
 ```
-
-### Create the envoy-initializer InitializerConfiguration
-
-```
-kubectl apply -f initializer-configurations/envoy.yaml 
-```
