@@ -12,6 +12,12 @@ gcloud alpha container clusters create k0 \
   --cluster-version 1.7.0
 ```
 
+Clone this repository:
+
+```
+git clone https://github.com/kelseyhightower/kubernetes-initializer-tutorial.git
+```
+
 ## Tutorial
 
 * [Deploy the Envoy Initializer](docs/deploy-envoy-initializer.md)
