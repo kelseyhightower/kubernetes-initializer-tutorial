@@ -15,4 +15,4 @@ gcloud alpha container clusters create k0 \
 ## Tutorial
 
 * [Deploy the Envoy Initializer](docs/deploy-envoy-initializer.md)
-* [Initializing Pods](docs/initializing-pods.md)
+* [Initializing Deployments](docs/initializing-deployments.md)
