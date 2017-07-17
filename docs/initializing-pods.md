@@ -1,4 +1,4 @@
-# Test the Envoy Initializer
+# Initializing Pods
 
 In this section you will create an [InitializerConfiguration](https://kubernetes.io/docs/admin/extensible-admission-controllers/#configure-initializers-on-the-fly) that forces new pods to be initialized by the Envoy Initializer.
 
