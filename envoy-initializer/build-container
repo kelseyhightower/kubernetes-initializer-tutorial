@@ -1,5 +1,5 @@
 #!/bin/bash
 ./build
 docker build -t gcr.io/hightowerlabs/envoy-initializer:0.0.1 .
-docker push gcr.io/hightowerlabs/envoy-initializer:0.0.1
+gcloud docker -- push gcr.io/hightowerlabs/envoy-initializer:0.0.1
 rm envoy-initializer
