@@ -6,8 +6,8 @@ initializers:
   - name: envoy.initializer.kubernetes.io
     rules:
       - apiGroups:
-          - ""
+          - "*"
         apiVersions:
-          - v1
+          - "*"
         resources:
-          - pods
+          - deployments

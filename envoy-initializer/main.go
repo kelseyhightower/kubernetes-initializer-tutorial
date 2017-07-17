@@ -22,6 +22,7 @@ import (
 
 	"github.com/ghodss/yaml"
 
+	"k8s.io/api/apps/v1beta1"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
@@ -77,8 +78,8 @@ func main() {
 		log.Fatal(err)
 	}
 
-	restClient := clientset.Core().RESTClient()
-	watchlist := cache.NewListWatchFromClient(restClient, "pods", corev1.NamespaceAll, fields.Everything())
+	restClient := clientset.AppsV1beta1().RESTClient()
+	watchlist := cache.NewListWatchFromClient(restClient, "deployments", corev1.NamespaceAll, fields.Everything())
 
 	includeUninitializedWatchlist := &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
@@ -93,10 +94,10 @@ func main() {
 
 	resyncPeriod := 30 * time.Second
 
-	_, controller := cache.NewInformer(includeUninitializedWatchlist, &corev1.Pod{}, resyncPeriod,
+	_, controller := cache.NewInformer(includeUninitializedWatchlist, &v1beta1.Deployment{}, resyncPeriod,
 		cache.ResourceEventHandlerFuncs{
 			AddFunc: func(obj interface{}) {
-				err := initializePod(obj.(*corev1.Pod), c, clientset)
+				err := initializeDeployment(obj.(*v1beta1.Deployment), c, clientset)
 				if err != nil {
 					log.Println(err)
 				}
@@ -114,46 +115,47 @@ func main() {
 	close(stop)
 }
 
-func initializePod(pod *corev1.Pod, c *config, clientset *kubernetes.Clientset) error {
-	if pod.ObjectMeta.GetInitializers() != nil {
-		pendingInitializers := pod.ObjectMeta.GetInitializers().Pending
+func initializeDeployment(deployment *v1beta1.Deployment, c *config, clientset *kubernetes.Clientset) error {
+	if deployment.ObjectMeta.GetInitializers() != nil {
+		pendingInitializers := deployment.ObjectMeta.GetInitializers().Pending
 
 		if initializerName == pendingInitializers[0].Name {
-			log.Printf("Initializing pod: %s", pod.Name)
+			log.Printf("Initializing deployment: %s", deployment.Name)
+
+			
+			o, err := runtime.NewScheme().DeepCopy(deployment)
+			if err != nil {
+				return err
+			}
+			initializedDeployment := o.(*v1beta1.Deployment)
 
 			// Remove self from the list of pending Initializers while preserving ordering.
 			if len(pendingInitializers) == 1 {
-				pod.ObjectMeta.Initializers = nil
+				initializedDeployment.ObjectMeta.Initializers = nil
 			} else {
-				pod.ObjectMeta.Initializers.Pending = append(pendingInitializers[:0], pendingInitializers[1:]...)
+				initializedDeployment.ObjectMeta.Initializers.Pending = append(pendingInitializers[:0], pendingInitializers[1:]...)
 			}
-
-			o, err := runtime.NewScheme().DeepCopy(pod)
-			if err != nil {
-				return err
-			}
-			initializedPod := o.(*corev1.Pod)
 
 			// Modify the PodSec and post an update.
-			initializedPod.Spec.Containers = append(pod.Spec.Containers, c.Containers...)
-			initializedPod.Spec.Volumes = append(pod.Spec.Volumes, c.Volumes...)
+			initializedDeployment.Spec.Template.Spec.Containers = append(deployment.Spec.Template.Spec.Containers, c.Containers...)
+			initializedDeployment.Spec.Template.Spec.Volumes = append(deployment.Spec.Template.Spec.Volumes, c.Volumes...)
 
-			oldData, err := json.Marshal(pod)
+			oldData, err := json.Marshal(deployment)
 			if err != nil {
 				return err
 			}
 
-			newData, err := json.Marshal(initializedPod)
+			newData, err := json.Marshal(initializedDeployment)
 			if err != nil {
 				return err
 			}
 
-			patchBytes, err := strategicpatch.CreateTwoWayMergePatch(oldData, newData, corev1.Pod{})
+			patchBytes, err := strategicpatch.CreateTwoWayMergePatch(oldData, newData, v1beta1.Deployment{})
 			if err != nil {
 				return err
 			}
 
-			_, err = clientset.CoreV1().Pods(pod.Namespace).Patch(pod.Name, types.StrategicMergePatchType, patchBytes)
+			_, err = clientset.AppsV1beta1().Deployments(deployment.Namespace).Patch(deployment.Name, types.StrategicMergePatchType, patchBytes)
 			if err != nil {
 				return err
 			}
