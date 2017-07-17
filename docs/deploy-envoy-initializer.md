@@ -4,7 +4,7 @@ The Envoy Initializer is a [Kubernetes initializer](https://kubernetes.io/docs/a
 
 ## Install
 
-The envoy proxy requires a [configuration file](https://lyft.github.io/envoy/docs/configuration/configuration.html) before it canbe used to forward trafic to other containers in a pod. Store the default `envoy.json` configuration in a configmap:
+The envoy proxy requires a [configuration file](https://lyft.github.io/envoy/docs/configuration/configuration.html) before it can be used to forward traffic to other containers in a pod. Store the default `envoy.json` configuration in a configmap:
 
 ```
 kubectl create configmap envoy --from-file envoy.json
