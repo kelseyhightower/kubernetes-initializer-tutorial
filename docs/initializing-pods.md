@@ -5,7 +5,7 @@ In this section you will create an [InitializerConfiguration](https://kubernetes
 ### Create the envoy-initializer InitializerConfiguration
 
 ```
-kubectl create -n envoy-initializer -f initializer-configurations/envoy.yaml
+kubectl apply -f initializer-configurations/envoy.yaml
 ```
 
-At this point any pod deployed to the `envoy-initializer` namespace will be initialized by the `envoy-initializer`.
+At this point new pods will be initialized by the `envoy-initializer`.
