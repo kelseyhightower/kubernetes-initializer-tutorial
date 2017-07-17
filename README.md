@@ -1,8 +1,10 @@
 # Kubernetes Initializer Tutorial
 
-## Usage
+This tutorial will walk you through building and testing a [Kubernetes Initializer](https://kubernetes.io/docs/admin/extensible-admission-controllers/#what-are-initializers). The [Envoy Initializer](envoy-initializer) will be used to inject a [Envoy](https://lyft.github.io/envoy) proxy into uninitialized pods. 
 
-Create a Kubernetes 1.7.0+ clusters with the alpha API enabled:
+## Prerequisites
+
+Create a Kubernetes 1.7.0+ clusters with the alpha API enabled. If you're using Google Container Engine create an alpha cluster:
 
 ```
 gcloud alpha container clusters create k0 \
