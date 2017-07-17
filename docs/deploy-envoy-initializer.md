@@ -14,7 +14,7 @@ kubectl create configmap envoy --from-file envoy.json
 
 ### Create the envoy-initializer ConfigMap 
 
-The `envoy-initializer` is configured using a ConfigMap, identified by the `-configmap` flag, which provides the containers and volumes to inject into a Deployment. Create the `envoy-initializer` ConfigMap:
+The Envoy Initializer is configured using a ConfigMap, identified by the `-configmap` flag, which provides the containers and volumes to inject into a Deployment. Create the `envoy-initializer` ConfigMap:
 
 ```
 kubectl apply -f configmaps/envoy-initializer.yaml
