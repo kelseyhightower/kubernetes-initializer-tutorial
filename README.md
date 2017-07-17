@@ -10,28 +10,6 @@ gcloud alpha container clusters create k0 \
   --cluster-version 1.7.0
 ```
 
-Store the envoy config in a configmap:
+## Tutorial
 
-```
-kubectl create configmap envoy --from-file envoy.json
-```
-
-### Deploy the Envoy Initializer
-
-Store the Envoy Initializer configuration in a configmap:
-
-```
-kubectl apply -f configmaps/envoy-initializer.yaml
-```
-
-Create the envoy initializer configuration:
-
-```
-kubectl apply -f initializer-configurations/envoy.yaml 
-```
-
-Create the `envoy-initializer` deployment:
-
-```
-kubectl apply -f deployments/envoy-initializer.yaml
-```
+* [Deploy the Envoy Initializer](docs/deploy-envoy-initializer.md)

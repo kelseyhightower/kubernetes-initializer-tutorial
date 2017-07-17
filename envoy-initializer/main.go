@@ -16,9 +16,10 @@ import (
 	"log"
 	"os"
 	"os/signal"
-	"strconv"
 	"syscall"
 	"time"
+
+	"github.com/ghodss/yaml"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -26,40 +27,44 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
-	"k8s.io/client-go/tools/clientcmd"
 )
 
-const defaultInitializerName = "initializer.kubernetes.io"
+const defaultInitializerName = "envoy.initializer.kubernetes.io"
+const defaultConfigmapName = "envoy-initializer"
 
 var (
+	configmapName   string
 	initializerName string
-	kubeconfig      string
+	namespace       string
 )
 
 type config struct {
-	containers []corev1.Container
+	Containers []corev1.Container
+	Volumes    []corev1.Volume
 }
 
 func main() {
-	flag.StringVar(&initializerName, "initializer-name", defaultInitializerName, "set the initializer name")
-	flag.StringVar(&kubeconfig, "kubeconfig", "", "absolute path to the kubeconfig file")
+	flag.StringVar(&configmapName, "configmap", defaultConfigmapName, "The envoy-initializer configmap name")
+	flag.StringVar(&initializerName, "initializer-name", defaultInitializerName, "Set the initializer name")
+	flag.StringVar(&namespace, "namespace", "default", "The Kubernetes namespace")
 	flag.Parse()
 
 	log.Println("Starting the Kubernetes initializer...")
 	log.Printf("Initializer name set to: %s", initializerName)
 
-	kconfig, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+	clusterConfig, err := rest.InClusterConfig()
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+	clientset, err := kubernetes.NewForConfig(clusterConfig)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	clientset, err := kubernetes.NewForConfig(kconfig)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	cm, err := clientset.CoreV1().ConfigMaps("default").Get("istio-initializer", metav1.GetOptions{})
+	cm, err := clientset.CoreV1().ConfigMaps(namespace).Get(configmapName, metav1.GetOptions{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -111,7 +116,7 @@ func initializePod(pod *corev1.Pod, c *config, clientset *kubernetes.Clientset) 
 		pendingInitializers := pod.ObjectMeta.GetInitializers().Pending
 
 		if initializerName == pendingInitializers[0].Name {
-			log.Printf("initializing pod: %s", pod.Name)
+			log.Printf("Initializing pod: %s", pod.Name)
 
 			// Remove self from the list of pending Initializers while preserving ordering.
 			if len(pendingInitializers) == 1 {
@@ -121,6 +126,9 @@ func initializePod(pod *corev1.Pod, c *config, clientset *kubernetes.Clientset) 
 			}
 
 			// Modify the PodSec and post an update.
+			pod.Spec.Containers = append(pod.Spec.Containers, c.Containers...)
+			pod.Spec.Volumes = append(pod.Spec.Volumes, c.Volumes...)
+
 			_, err := clientset.CoreV1().Pods(pod.Namespace).Update(pod)
 			if err != nil {
 				return err
@@ -129,4 +137,13 @@ func initializePod(pod *corev1.Pod, c *config, clientset *kubernetes.Clientset) 
 	}
 
 	return nil
+}
+
+func configmapToConfig(configmap *corev1.ConfigMap) (*config, error) {
+	var c config
+	err := yaml.Unmarshal([]byte(configmap.Data["config"]), &c)
+	if err != nil {
+		return nil, err
+	}
+	return &c, nil
 }

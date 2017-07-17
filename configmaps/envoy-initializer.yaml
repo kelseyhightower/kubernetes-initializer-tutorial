@@ -3,27 +3,28 @@ kind: ConfigMap
 metadata:
   name: envoy-initializer
 data:
-  containers:
-    - name: envoy
-      image: lyft/envoy:845747db88f102c0fd262ab234308e9e22f693a1
-      args:
-        - "--concurrency=4"
-        - "--config-path=/etc/envoy/envoy.json"
-        - "--mode=serve"
-	  ports:
-		- containerPort: 80
-		  protocol: TCP
-	  resources:
-		limits:
-		  cpu: 1000m
-		  memory: 512Mi
-		requests:
-		  cpu: 100m
-		  memory: 64Mi
-	  volumeMounts:
-		- name: envoy-conf
-		  mountPath: /etc/envoy
-  volumes:
-    - name: envoy-conf
-      configMap:
-        name: envoy
+  config: |
+    containers:
+      - name: envoy
+        image: lyft/envoy:845747db88f102c0fd262ab234308e9e22f693a1
+        args:
+          - "--concurrency=4"
+          - "--config-path=/etc/envoy/envoy.json"
+          - "--mode=serve"
+        ports:
+          - containerPort: 80
+            protocol: TCP
+        resources:
+          limits:
+            cpu: "1000m"
+            memory: "512Mi"
+          requests:
+            cpu: "100m"
+            memory: "64Mi"
+        volumeMounts:
+          - name: envoy-conf
+            mountPath: /etc/envoy
+    volumes:
+      - name: envoy-conf
+        configMap:
+          name: envoy
