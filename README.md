@@ -22,3 +22,4 @@ git clone https://github.com/kelseyhightower/kubernetes-initializer-tutorial.git
 
 * [Deploy the Envoy Initializer](docs/deploy-envoy-initializer.md)
 * [Initializing Deployments](docs/initializing-deployments.md)
+* [Cleaning Up](docs/cleanup.md)
