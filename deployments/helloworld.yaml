@@ -16,3 +16,5 @@ spec:
         - name: helloworld
           image: gcr.io/hightowerlabs/helloworld:0.0.1
           imagePullPolicy: Always
+          args:
+            - "-http=127.0.0.1:8080"
