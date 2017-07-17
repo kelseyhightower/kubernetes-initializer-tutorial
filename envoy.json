@@ -1,7 +1,7 @@
 {
   "listeners": [
     {
-      "address": "tcp://0.0.0.0:80",
+      "address": "tcp://0.0.0.0:8080",
       "filters": [
         {
           "type": "read",
@@ -50,7 +50,7 @@
         "features": "http2",
         "hosts": [
           {
-            "url": "tcp://127.0.0.1:8080"
+            "url": "tcp://127.0.0.1:80"
           }
         ]
       }

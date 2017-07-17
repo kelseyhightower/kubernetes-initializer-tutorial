@@ -7,10 +7,11 @@ data:
     containers:
       - name: envoy
         image: lyft/envoy:845747db88f102c0fd262ab234308e9e22f693a1
+        command: ["/usr/local/bin/envoy"]
         args:
-          - "--concurrency=4"
-          - "--config-path=/etc/envoy/envoy.json"
-          - "--mode=serve"
+          - "--concurrency 4"
+          - "--config-path /etc/envoy/envoy.json"
+          - "--mode serve"
         ports:
           - containerPort: 80
             protocol: TCP
