@@ -18,6 +18,10 @@ Download the tutorial artifacts by cloning this repository:
 git clone https://github.com/kelseyhightower/kubernetes-initializer-tutorial.git
 ```
 
+```
+cd kubernetes-initializer-tutorial
+```
+
 ## Tutorial
 
 * [Deploy the Envoy Initializer](docs/deploy-envoy-initializer.md)
