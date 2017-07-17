@@ -12,6 +12,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"log"
 	"os"
@@ -25,6 +26,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/strategicpatch"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
@@ -125,11 +128,32 @@ func initializePod(pod *corev1.Pod, c *config, clientset *kubernetes.Clientset) 
 				pod.ObjectMeta.Initializers.Pending = append(pendingInitializers[:0], pendingInitializers[1:]...)
 			}
 
-			// Modify the PodSec and post an update.
-			pod.Spec.Containers = append(pod.Spec.Containers, c.Containers...)
-			pod.Spec.Volumes = append(pod.Spec.Volumes, c.Volumes...)
+			o, err := runtime.NewScheme().DeepCopy(pod)
+			if err != nil {
+				return err
+			}
+			initializedPod := o.(*corev1.Pod)
 
-			_, err := clientset.CoreV1().Pods(pod.Namespace).Update(pod)
+			// Modify the PodSec and post an update.
+			initializedPod.Spec.Containers = append(pod.Spec.Containers, c.Containers...)
+			initializedPod.Spec.Volumes = append(pod.Spec.Volumes, c.Volumes...)
+
+			oldData, err := json.Marshal(pod)
+			if err != nil {
+				return err
+			}
+
+			newData, err := json.Marshal(initializedPod)
+			if err != nil {
+				return err
+			}
+
+			patchBytes, err := strategicpatch.CreateTwoWayMergePatch(oldData, newData, corev1.Pod{})
+			if err != nil {
+				return err
+			}
+
+			_, err = clientset.CoreV1().Pods(pod.Namespace).Patch(pod.Name, types.StrategicMergePatchType, patchBytes)
 			if err != nil {
 				return err
 			}
