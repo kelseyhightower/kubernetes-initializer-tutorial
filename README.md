@@ -1,6 +1,6 @@
 # Kubernetes Initializer Tutorial
 
-This tutorial will walk you through building and testing a [Kubernetes Initializer](https://kubernetes.io/docs/admin/extensible-admission-controllers/#what-are-initializers). The [Envoy Initializer](envoy-initializer) will be used to inject an [Envoy](https://lyft.github.io/envoy) proxy into uninitialized Deployments. 
+This tutorial will walk you through building and testing a [Kubernetes Initializer](https://kubernetes.io/docs/admin/extensible-admission-controllers/#what-are-initializers). The [Envoy Initializer](envoy-initializer) will be used to inject an [Envoy](https://lyft.github.io/envoy) proxy into an uninitialized Deployment. 
 
 ## Prerequisites
 
