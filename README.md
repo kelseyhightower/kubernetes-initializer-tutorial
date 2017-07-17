@@ -1,6 +1,6 @@
 # Kubernetes Initializer Tutorial
 
-This tutorial will walk you through building and testing a [Kubernetes Initializer](https://kubernetes.io/docs/admin/extensible-admission-controllers/#what-are-initializers). The [Envoy Initializer](envoy-initializer) will be used to inject an [Envoy](https://lyft.github.io/envoy) proxy into an uninitialized Deployment. 
+This tutorial walks you through building and deploying a [Kubernetes Initializer](https://kubernetes.io/docs/admin/extensible-admission-controllers/#what-are-initializers) that injects an [Envoy](https://lyft.github.io/envoy) proxy container into uninitialized Deployments. 
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ gcloud alpha container clusters create k0 \
   --cluster-version 1.7.0
 ```
 
-Download the tutorial artifacts by cloning this repository:
+Download the tutorial by cloning this repository:
 
 ```
 git clone https://github.com/kelseyhightower/kubernetes-initializer-tutorial.git

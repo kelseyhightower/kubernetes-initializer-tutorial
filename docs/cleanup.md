@@ -1,4 +1,4 @@
-# Cleanup
+# Cleaning Up
 
 The following commands will delete all the Kubernetes objects associated with this tutorial.
 
