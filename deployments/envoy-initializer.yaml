@@ -1,6 +1,8 @@
 apiVersion: apps/v1beta1
 kind: Deployment
 metadata:
+  initializers:
+    pending: []
   labels:
     app: envoy-initializer
   name: envoy-initializer
