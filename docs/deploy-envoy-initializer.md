@@ -38,4 +38,4 @@ metadata:
     pending: []
 ```
 
-At this point the `envoy-initializer` is ready to initialized uninitialized Deployments.
+At this point the Envoy Initializer is ready to initialize uninitialized Deployments.
