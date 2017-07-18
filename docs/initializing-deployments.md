@@ -50,4 +50,4 @@ envoy-initializer-3840443721-bjfb4   1/1       Running   0          22m
 helloworld-3012526715-zk5kg          2/2       Running   0          31s
 ```
 
-The second container is the Envoy proxy which was injected into the Pod by the `envoy-initializer`.
+The second container is the Envoy proxy which was injected into the Pod by the Envoy Initializer.
