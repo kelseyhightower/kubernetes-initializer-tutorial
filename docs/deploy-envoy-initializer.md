@@ -28,7 +28,7 @@ Deploy the `envoy-initializer` controller:
 kubectl apply -f deployments/envoy-initializer.yaml
 ```
 
-The `envoy-initializer` Deployment sets pending initializers to an empty list which bypasses initialization. This prevents the Envoy Initializer from getting stuck waiting for initialization, which can happen if the `envoy` [initialization configuration](initializing-deployments.md#create-the-envoy-initializer-InitializerConfiguration) is created before the `envoy-initializer` Deployment.
+The `envoy-initializer` Deployment sets pending initializers to an empty list which bypasses initialization. This prevents the Envoy Initializer from getting stuck waiting for initialization, which can happen if the `envoy` [Initialization Configuration](initializing-deployments.md#create-the-envoy-initializer-InitializerConfiguration) is created before the `envoy-initializer` Deployment.
 
 ```
 apiVersion: apps/v1beta1
