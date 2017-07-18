@@ -11,7 +11,7 @@ envoy.initializer.example.com
 ```
  
 * Initializers should be deployed using a Deployment for easy upgrades and auto restarts.
-* Initializers should explicitly set the list of pending initializers to exclude itself, or to an empty array, to avoid getting stuck waiting to initialized. Examples:
+* Initializers should explicitly set the list of pending initializers to exclude itself, or to an empty array, to avoid getting stuck waiting to initialize. Examples:
 
 Set the list of pending initializers to exclude itself
 
