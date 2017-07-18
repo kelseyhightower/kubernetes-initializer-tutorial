@@ -6,7 +6,7 @@ The Envoy Initializer is a [Kubernetes Initializer](https://kubernetes.io/docs/a
 
 ### Store the Envoy configuration in a ConfigMap
 
-Envoy requires a [configuration file](https://lyft.github.io/envoy/docs/configuration/configuration.html) before it can proxy traffic to other containers in a Pod. Store the `envoy.json` configuration in a ConfigMap:
+Envoy requires a [configuration file](https://lyft.github.io/envoy/docs/configuration/configuration.html) before it can proxy traffic to other containers in a Pod. Store the `envoy.json` configuration file in a ConfigMap:
 
 ```
 kubectl create configmap envoy --from-file envoy.json
