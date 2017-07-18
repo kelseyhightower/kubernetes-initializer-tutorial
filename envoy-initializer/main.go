@@ -76,6 +76,7 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Load the Envoy Initializer configuration from a Kubernetes ConfigMap.
 	cm, err := clientset.CoreV1().ConfigMaps(namespace).Get(configmap, metav1.GetOptions{})
 	if err != nil {
 		log.Fatal(err)
@@ -86,9 +87,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Watch uninitialized Deployments in all namespaces.
 	restClient := clientset.AppsV1beta1().RESTClient()
 	watchlist := cache.NewListWatchFromClient(restClient, "deployments", corev1.NamespaceAll, fields.Everything())
 
+	// Wrap the returned watchlist to workaround the inability to include
+	// the `IncludeUninitialized` list option when setting up watch clients.
 	includeUninitializedWatchlist := &cache.ListWatch{
 		ListFunc: func(options metav1.ListOptions) (runtime.Object, error) {
 			options.IncludeUninitialized = true
@@ -110,7 +114,8 @@ func main() {
 					log.Println(err)
 				}
 			},
-		})
+		},
+	)
 
 	stop := make(chan struct{})
 	go controller.Run(stop)
@@ -156,7 +161,8 @@ func initializeDeployment(deployment *v1beta1.Deployment, c *config, clientset *
 				}
 			}
 
-			// Modify the PodSec and post an update.
+			// Modify the Deployment's Pod template to include the Envoy container
+			// and configuration volume. Then patch the original deployment.
 			initializedDeployment.Spec.Template.Spec.Containers = append(deployment.Spec.Template.Spec.Containers, c.Containers...)
 			initializedDeployment.Spec.Template.Spec.Volumes = append(deployment.Spec.Template.Spec.Volumes, c.Volumes...)
 
