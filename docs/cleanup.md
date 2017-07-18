@@ -1,6 +1,6 @@
 # Cleaning Up
 
-The following commands will delete all the Kubernetes objects associated with this tutorial.
+The following commands will delete the Kubernetes objects associated with this tutorial.
 
 ```
 kubectl delete initializerconfiguration envoy
