@@ -22,6 +22,9 @@ metadata:
   initializers:
     pending:
       - initializer.vaultproject.io
+      # Do not include the Envoy Initializer
+      # - envoy.initializer.kubernetes.io
+  name: envoy-initializer
 ```
 
 Set the pending initializers to an empty array:
