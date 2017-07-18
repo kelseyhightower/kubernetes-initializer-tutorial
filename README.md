@@ -12,7 +12,7 @@ gcloud alpha container clusters create k0 \
   --cluster-version 1.7.0
 ```
 
-Download the tutorial by cloning this repository:
+Download this tutorial by cloning this repository:
 
 ```
 git clone https://github.com/kelseyhightower/kubernetes-initializer-tutorial.git
