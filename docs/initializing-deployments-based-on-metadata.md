@@ -12,7 +12,7 @@ kubectl delete deployments helloworld envoy-initializer
 
 ## Deploy the Envoy Initializer
 
-Deploy the Envoy Initializer with the `-require-annotation` flag set. This will ensure the Envoy proxy container is only injected into Deployments with the `initializer.kubernetes.io/envoy` annotation set to a non-empty value.
+Deploy the Envoy Initializer with the `-require-annotation` flag set. This will ensure the Envoy proxy container is only injected into Deployments with an `initializer.kubernetes.io/envoy` annotation set to a non-empty value.
 
 ```
 kubectl apply -f deployments/envoy-initializer-with-annotation.yaml
