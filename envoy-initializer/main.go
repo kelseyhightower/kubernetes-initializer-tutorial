@@ -35,13 +35,19 @@ import (
 	"k8s.io/client-go/tools/cache"
 )
 
-const defaultInitializerName = "envoy.initializer.kubernetes.io"
-const defaultConfigmapName = "envoy-initializer"
+const (
+	defaultAnnotation      = "initializer.kubernetes.io/envoy"
+	defaultInitializerName = "envoy.initializer.kubernetes.io"
+	defaultConfigmap       = "envoy-initializer"
+	defaultNamespace       = "default"
+)
 
 var (
-	configmapName   string
-	initializerName string
-	namespace       string
+	annotation        string
+	configmap         string
+	initializerName   string
+	namespace         string
+	requireAnnotation bool
 )
 
 type config struct {
@@ -50,9 +56,11 @@ type config struct {
 }
 
 func main() {
-	flag.StringVar(&configmapName, "configmap", defaultConfigmapName, "The envoy-initializer configmap name")
-	flag.StringVar(&initializerName, "initializer-name", defaultInitializerName, "Set the initializer name")
-	flag.StringVar(&namespace, "namespace", "default", "The Kubernetes namespace")
+	flag.StringVar(&annotation, "annotation", defaultAnnotation, "The annotation to trigger initialization")
+	flag.StringVar(&configmap, "configmap", defaultConfigmap, "The envoy initializer configuration configmap")
+	flag.StringVar(&initializerName, "initializer-name", defaultInitializerName, "The initializer name")
+	flag.StringVar(&namespace, "namespace", "default", "The configuration namespace")
+	flag.BoolVar(&requireAnnotation, "require-annotation", false, "Require annotation for initialization")
 	flag.Parse()
 
 	log.Println("Starting the Kubernetes initializer...")
@@ -68,7 +76,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cm, err := clientset.CoreV1().ConfigMaps(namespace).Get(configmapName, metav1.GetOptions{})
+	cm, err := clientset.CoreV1().ConfigMaps(namespace).Get(configmap, metav1.GetOptions{})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -122,7 +130,6 @@ func initializeDeployment(deployment *v1beta1.Deployment, c *config, clientset *
 		if initializerName == pendingInitializers[0].Name {
 			log.Printf("Initializing deployment: %s", deployment.Name)
 
-			
 			o, err := runtime.NewScheme().DeepCopy(deployment)
 			if err != nil {
 				return err
@@ -134,6 +141,19 @@ func initializeDeployment(deployment *v1beta1.Deployment, c *config, clientset *
 				initializedDeployment.ObjectMeta.Initializers = nil
 			} else {
 				initializedDeployment.ObjectMeta.Initializers.Pending = append(pendingInitializers[:0], pendingInitializers[1:]...)
+			}
+
+			if requireAnnotation {
+				a := deployment.ObjectMeta.GetAnnotations()
+				_, ok := a[annotation]
+				if !ok {
+					log.Printf("Required '%s' annotation missing; skipping envoy container injection", annotation)
+					_, err = clientset.AppsV1beta1().Deployments(deployment.Namespace).Update(initializedDeployment)
+					if err != nil {
+						return err
+					}
+					return nil
+				}
 			}
 
 			// Modify the PodSec and post an update.
