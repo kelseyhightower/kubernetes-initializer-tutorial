@@ -8,7 +8,7 @@ In this section you will create an [InitializerConfiguration](https://kubernetes
 kubectl apply -f deployments/helloworld.yaml
 ```
 
-Notice only one container is running in the helloworld Pod:
+Notice only one container is running in the `helloworld` Pod:
 
 ```
 kubectl get pods
