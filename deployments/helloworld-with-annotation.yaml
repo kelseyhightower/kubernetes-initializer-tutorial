@@ -5,14 +5,16 @@ metadata:
     "initializer.kubernetes.io/envoy": "true"
   labels:
     app: helloworld
-  name: helloworld
+    envoy: "true"
+  name: helloworld-with-annotation
 spec:
   replicas: 1
   template:
     metadata:
       labels:
         app: helloworld
-      name: helloworld
+        envoy: "true"
+      name: helloworld-with-annotation
     spec:
       containers:
         - name: helloworld

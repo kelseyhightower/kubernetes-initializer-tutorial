@@ -7,7 +7,7 @@ kubectl delete initializerconfiguration envoy
 ```
 
 ```
-kubectl delete deployment envoy-initializer helloworld
+kubectl delete deployment envoy-initializer helloworld helloworld-with-annotation
 ```
 
 ```

@@ -26,4 +26,5 @@ cd kubernetes-initializer-tutorial
 
 * [Deploy the Envoy Initializer](docs/deploy-envoy-initializer.md)
 * [Initializing Deployments](docs/initializing-deployments.md)
+* [Initializing Deployments based on Metadata](docs/initializing-deployments-based-on-metadata.md)
 * [Cleaning Up](docs/cleanup.md)
