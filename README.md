@@ -30,3 +30,4 @@ cd kubernetes-initializer-tutorial
 * [Initializing Deployments](docs/initializing-deployments.md)
 * [Initializing Deployments Based On Metadata](docs/initializing-deployments-based-on-metadata.md)
 * [Cleaning Up](docs/cleanup.md)
+* [Best Practices](docs/best-practices.md)
